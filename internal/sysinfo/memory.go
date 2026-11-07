@@ -121,4 +121,3 @@ func (s *MemSampler) Sample(stats *MemStats) error {
 	}
 	return ParseProcMeminfo(s.buf[:n], stats)
 }
-

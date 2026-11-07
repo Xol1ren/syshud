@@ -94,4 +94,3 @@ func TestModelLifecycle(t *testing.T) {
 		t.Errorf("Expected tea.Quit command on 'q'")
 	}
 }
-

@@ -30,4 +30,3 @@ var (
 	// Footer style
 	footerStyle = lipgloss.NewStyle().Foreground(colorDim)
 )
-

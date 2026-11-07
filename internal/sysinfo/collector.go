@@ -70,4 +70,3 @@ func (c *Collector) Sample(stats *SystemStats) error {
 	}
 	return nil
 }
-

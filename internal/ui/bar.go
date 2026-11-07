@@ -50,4 +50,3 @@ func RenderBar(pct float64, barWidth int) string {
 
 	return b.String()
 }
-

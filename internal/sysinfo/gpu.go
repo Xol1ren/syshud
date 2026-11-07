@@ -30,15 +30,15 @@ type GPUSampler struct {
 	modelName string
 
 	// Function pointers registered via purego
-	nvmlInit                    func() nvmlReturn
-	nvmlShutdown                func() nvmlReturn
-	nvmlDeviceGetCount          func(*uint32) nvmlReturn
-	nvmlDeviceGetHandleByIndex  func(uint32, *uintptr) nvmlReturn
-	nvmlDeviceGetName           func(uintptr, *byte, uint32) nvmlReturn
+	nvmlInit                      func() nvmlReturn
+	nvmlShutdown                  func() nvmlReturn
+	nvmlDeviceGetCount            func(*uint32) nvmlReturn
+	nvmlDeviceGetHandleByIndex    func(uint32, *uintptr) nvmlReturn
+	nvmlDeviceGetName             func(uintptr, *byte, uint32) nvmlReturn
 	nvmlDeviceGetUtilizationRates func(uintptr, *nvmlUtilization) nvmlReturn
-	nvmlDeviceGetMemoryInfo     func(uintptr, *nvmlMemory) nvmlReturn
-	nvmlDeviceGetTemperature    func(uintptr, uint32, *uint32) nvmlReturn
-	nvmlDeviceGetPowerUsage     func(uintptr, *uint32) nvmlReturn
+	nvmlDeviceGetMemoryInfo       func(uintptr, *nvmlMemory) nvmlReturn
+	nvmlDeviceGetTemperature      func(uintptr, uint32, *uint32) nvmlReturn
+	nvmlDeviceGetPowerUsage       func(uintptr, *uint32) nvmlReturn
 
 	// Pre-allocated stack-like structs to avoid heap escape
 	mem  nvmlMemory
@@ -204,4 +204,3 @@ func (s *GPUSampler) Sample(stats *GPUStats) error {
 
 	return nil
 }
-

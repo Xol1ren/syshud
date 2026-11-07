@@ -324,4 +324,3 @@ func findCPUThermalPath() string {
 	}
 	return ""
 }
-

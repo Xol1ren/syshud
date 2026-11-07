@@ -48,4 +48,3 @@ type SystemStats struct {
 	Disk DiskStats
 	GPU  GPUStats
 }
-
