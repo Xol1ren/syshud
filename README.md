@@ -1,6 +1,6 @@
 # syshud
 
-An ultra-compact, high-performance terminal HUD dashboard in Go designed to replace bloated system monitors with a lightweight footprint (< 3 MB RSS) and zero-allocation procfs and disk parsers.
+An ultra-compact, high-performance terminal HUD dashboard in Go designed to replace bloated system monitors with a lightweight footprint (~26.9 MB RSS) and zero-allocation procfs and disk parsers.
 
 ```text
 ┌─ CPU [Intel Core Ultra 9 275HX] ─────┐┌─ MEMORY ─────────────────────────────┐
@@ -43,7 +43,7 @@ An ultra-compact, high-performance terminal HUD dashboard in Go designed to repl
 | **CPU Usage** | `/proc/stat` | Delta computation between ticks ($\Delta\text{Total}$, $\Delta\text{Idle}$) | In-place ASCII parsing of byte buffers |
 | **CPU Frequency** | `/sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq` | Scaling frequency in kHz converted to GHz (fallback to `/proc/cpuinfo`) | Fixed stack buffer read |
 | **CPU Temp** | `/sys/class/hwmon/` or `/sys/class/thermal/` | Auto-detects `coretemp`, `k10temp`, `zenpower`, or `x86_pkg_temp` in millidegrees | Re-seekable descriptor |
-| **CPU Power** | `/sys/class/powercap/intel-rapl/intel-rapl:0/energy_uj` | $\Delta\text{energy\_uj} / \Delta\text{time\_us}$ | Auto-fallback to 0W on restricted perms |
+| **CPU Power** | `/sys/class/powercap/intel-rapl/intel-rapl:0/energy_uj` | Δenergy_uj / Δtime_us | Auto-fallback to 0W on restricted perms |
 | **Memory** | `/proc/meminfo` | `Total - Available`, `Buffers + Cached + SReclaimable` | Reusable 2KB buffer, tag scanning |
 | **Disk** | `/home` (or `/`) | Direct `syscall.SYS_STATFS` assembly syscall | Stack-allocated `Statfs_t`, pre-built null-terminated path |
 | **GPU** | `libnvidia-ml.so.1` / `libnvidia-ml.so` | Runtime `purego.Dlopen` and dynamic symbol binding | Graceful fallback if driver missing |
@@ -52,24 +52,24 @@ An ultra-compact, high-performance terminal HUD dashboard in Go designed to repl
 
 ## Performance & Memory Footprint
 
-### Benchmark Results (`go test -bench=. -benchmem ./...`)
+### Benchmark Results (`go test -bench=. -benchmem -count=10 ./...`)
 
-*Environment: Intel(R) Core(TM) Ultra 9 275HX, go version go1.25.11 X:nodwarf5 linux/amd64, 2026-11-07*
+*Environment: Intel(R) Core(TM) Ultra 9 275HX, go version go1.25.11 X:nodwarf5 linux/amd64, 2026-11-07 (medians of 10 runs)*
 
 ```text
 goos: linux
 goarch: amd64
 pkg: syshud/internal/sysinfo
 cpu: Intel(R) Core(TM) Ultra 9 275HX
-BenchmarkParseProcStat-24          27634854         40.14 ns/op          0 B/op          0 allocs/op
-BenchmarkParseProcMeminfo-24        3102450        369.4 ns/op           0 B/op          0 allocs/op
-BenchmarkDiskSample-24              3553520        328.1 ns/op           0 B/op          0 allocs/op
-BenchmarkCollectorSampleLive-24       37735        32746 ns/op         312 B/op         15 allocs/op
+BenchmarkParseProcStat-24          25927634         41.28 ns/op          0 B/op          0 allocs/op
+BenchmarkParseProcMeminfo-24        3310228        353.20 ns/op          0 B/op          0 allocs/op
+BenchmarkDiskSample-24              3506713        357.00 ns/op          0 B/op          0 allocs/op
+BenchmarkCollectorSampleLive-24       45024     30524.00 ns/op         312 B/op         15 allocs/op
 PASS
 ```
 
-- **Runtime Memory (RSS)**: Baseline < 3 MB RSS.
-- **CPU Overhead**: < 0.05% CPU utilization at 1000ms tick interval.
+- **Runtime Memory (RSS)**: Baseline ~26.9 MB RSS (measured via VmRSS over 30s active terminal session).
+- **CPU Overhead**: ~0.30% CPU utilization at 1000ms tick interval.
 - **Binary Size**: ~3.2 MB stripped (`-ldflags="-s -w"`).
 
 ---
