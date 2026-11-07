@@ -1,6 +1,6 @@
 # syshud
 
-An ultra-compact, high-performance terminal HUD dashboard in Go designed to replace bloated system monitors with a lightweight footprint (< 3 MB RSS) and zero heap allocations per telemetry cycle.
+An ultra-compact, high-performance terminal HUD dashboard in Go designed to replace bloated system monitors with a lightweight footprint (< 3 MB RSS) and zero-allocation procfs and disk parsers.
 
 ```text
 ┌─ CPU [Intel Core Ultra 9 275HX] ─────┐┌─ MEMORY ─────────────────────────────┐
@@ -23,9 +23,9 @@ An ultra-compact, high-performance terminal HUD dashboard in Go designed to repl
    - Takes exactly **10–12 terminal rows** total.
    - Symmetrically balanced 2x2 grid that automatically scales across 2 columns on window resize (`tea.WindowSizeMsg`).
 
-2. **Zero-Allocation Runtime Telemetry Engine**:
+2. **Zero-Allocation Procfs & Disk Parsers**:
    - Scrapes Linux `/proc` and `/sys` directly through pre-opened file descriptors and stack buffers (`[2048]byte`).
-   - Zero heap allocations during parsing and refresh ticks (`0 B/op`, `0 allocs/op`).
+   - Zero heap allocations during procfs parsing and disk sampling (`0 B/op`, `0 allocs/op`). The live collector cycle (`BenchmarkCollectorSampleLive`) requires only ~312 B/op and 15 allocs/op.
    - Absolutely **NO `gopsutil`**, **NO heavy dependencies**.
 
 3. **Minimalist 4-Card Grid**:
@@ -54,14 +54,17 @@ An ultra-compact, high-performance terminal HUD dashboard in Go designed to repl
 
 ### Benchmark Results (`go test -bench=. -benchmem ./...`)
 
+*Environment: Intel(R) Core(TM) Ultra 9 275HX, go version go1.25.11 X:nodwarf5 linux/amd64, 2026-11-07*
+
 ```text
 goos: linux
 goarch: amd64
 pkg: syshud/internal/sysinfo
 cpu: Intel(R) Core(TM) Ultra 9 275HX
-BenchmarkParseProcStat-24          30643142      38.48 ns/op       0 B/op     0 allocs/op
-BenchmarkParseProcMeminfo-24        3677278     334.00 ns/op       0 B/op     0 allocs/op
-BenchmarkDiskSample-24              3393081     328.00 ns/op       0 B/op     0 allocs/op
+BenchmarkParseProcStat-24          27634854         40.14 ns/op          0 B/op          0 allocs/op
+BenchmarkParseProcMeminfo-24        3102450        369.4 ns/op           0 B/op          0 allocs/op
+BenchmarkDiskSample-24              3553520        328.1 ns/op           0 B/op          0 allocs/op
+BenchmarkCollectorSampleLive-24       37735        32746 ns/op         312 B/op         15 allocs/op
 PASS
 ```
 
