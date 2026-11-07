@@ -165,3 +165,9 @@ sudo udevadm control --reload && sudo udevadm trigger
 └── go.sum
 ```
 
+
+---
+
+## License
+
+Apache License 2.0. See LICENSE for details.
