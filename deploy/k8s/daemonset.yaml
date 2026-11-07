@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: syshud
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: syshud
+    app.kubernetes.io/component: node-telemetry
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: syshud
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: syshud
+    spec:
+      hostPID: true
+      hostNetwork: false
+      containers:
+        - name: syshud
+          image: ghcr.io/syshud/syshud:v1.0.0
+          imagePullPolicy: IfNotPresent
+          stdin: true
+          tty: true
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 20m
+              memory: 8Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+          volumeMounts:
+            - name: host-proc
+              mountPath: /proc
+              readOnly: true
+            - name: host-sys
+              mountPath: /sys
+              readOnly: true
+            - name: host-home
+              mountPath: /home
+              readOnly: true
+      volumes:
+        - name: host-proc
+          hostPath:
+            path: /proc
+        - name: host-sys
+          hostPath:
+            path: /sys
+        - name: host-home
+          hostPath:
+            path: /home
+

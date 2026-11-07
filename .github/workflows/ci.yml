@@ -1,0 +1,48 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    name: Lint, Test & Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache: true
+
+      - name: Verify Formatting
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "Code is not formatted according to gofmt:"
+            gofmt -d .
+            exit 1
+          fi
+
+      - name: Run Go Vet
+        run: go vet ./...
+
+      - name: Execute Tests and Allocation Benchmarks
+        run: go test -v -bench=. -benchmem ./...
+
+      - name: Build Static Binary
+        run: make build
+
+      - name: Verify Binary Footprint
+        run: |
+          ls -lh bin/syshud
+          size=$(stat -c%s bin/syshud)
+          if [ $size -gt 6000000 ]; then
+            echo "Binary size exceeds limit (6MB): $size bytes"
+            exit 1
+          fi
+

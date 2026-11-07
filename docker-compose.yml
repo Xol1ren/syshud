@@ -1,0 +1,29 @@
+services:
+  syshud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: syshud:latest
+    container_name: syshud
+    stdin_open: true
+    tty: true
+    pid: "host"
+    network_mode: "none"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    volumes:
+      - /proc:/proc:ro
+      - /sys:/sys:ro
+      - /home:/home:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.10"
+          memory: 32M
+        reservations:
+          cpus: "0.02"
+          memory: 8M
+

@@ -1,0 +1,22 @@
+# Binaries and build artifacts
+bin/
+build/
+syshud
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries and profiles
+*.test
+*.out
+*.prof
+*.pprof
+
+# OS and Editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
