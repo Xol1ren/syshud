@@ -1,6 +1,8 @@
 # syshud
 
-An ultra-compact, high-performance terminal HUD dashboard in Go designed to replace bloated system monitors with a lightweight footprint (< 3 MB RSS) and zero heap allocations per telemetry cycle.
+[![CI Pipeline](https://github.com/Xol1ren/syshud/actions/workflows/ci.yml/badge.svg)](https://github.com/Xol1ren/syshud/actions/workflows/ci.yml)
+
+A compact terminal HUD dashboard in Go with a lightweight footprint (< 3 MB RSS) and zero heap allocations per telemetry cycle.
 
 ```text
 ┌─ CPU [Intel Core Ultra 9 275HX] ─────┐┌─ MEMORY ─────────────────────────────┐
@@ -19,7 +21,7 @@ An ultra-compact, high-performance terminal HUD dashboard in Go designed to repl
 
 ## Core Principles & Design
 
-1. **Ultra-Compact Single-Binary HUD**:
+1. **Compact Single-Binary HUD**:
    - Takes exactly **10–12 terminal rows** total.
    - Symmetrically balanced 2x2 grid that automatically scales across 2 columns on window resize (`tea.WindowSizeMsg`).
 
@@ -75,7 +77,7 @@ PASS
 
 ### Prerequisites
 - Linux kernel $\ge 4.4$ (x86_64 or aarch64)
-- Go $\ge 1.22$
+- Go $\ge 1.25.11$ (as required in `go.mod`)
 - `make`
 
 ### Building
@@ -90,6 +92,16 @@ make test
 # Launch HUD directly
 make run
 ```
+
+---
+
+## Limitations
+
+- **Linux only:** Relies on direct Linux `/proc` and `/sys` filesystem interfaces (`/proc/stat`, `/proc/meminfo`, `/sys/class/hwmon`) and Linux-specific syscalls (`syscall.SYS_STATFS`). Does not support macOS or Windows.
+- **NVIDIA GPU only via NVML:** GPU metrics require an NVIDIA GPU with `libnvidia-ml.so.1` or `libnvidia-ml.so` installed. AMD and Intel integrated/discrete GPUs are not supported; the GPU panel displays `N/A` if NVIDIA libraries or hardware are absent.
+- **Elevated permissions required for CPU power (RAPL):** Linux kernels $\ge 5.10$ restrict `/sys/class/powercap/intel-rapl/*/energy_uj` to `root` (mode `0400`). Without root privileges or custom udev rules, CPU power draw reports `0W`.
+- **Fixed disk target (`/home`):** Disk telemetry inspects strictly the `/home` mount point (falling back to `/` only if `/home` does not exist). Arbitrary mount points or multi-disk monitoring are not supported.
+- **Single-GPU monitoring:** The NVML sampler attaches to the first GPU device (`index 0`). Multi-GPU setups are not aggregated.
 
 ---
 
